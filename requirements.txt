@@ -1,5 +1,6 @@
-gradio==4.44.1
-huggingface_hub==0.24.7
+gradio==3.41.2
+huggingface_hub==0.17.3
 scikit-learn
 pandas
 numpy
+jinja2==3.0.3
