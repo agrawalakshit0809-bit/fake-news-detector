@@ -132,4 +132,5 @@ with gr.Blocks(title="Fake News Detector") as app:
     submit_btn.click(fn=predict_news, inputs=input_box, outputs=output_box)
     clear_btn.click(fn=lambda: ("", ""), outputs=[input_box, output_box])
 
-app.launch()
+if __name__ == "__main__":
+    app.launch(server_name="0.0.0.0", server_port=7860)
