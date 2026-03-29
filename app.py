@@ -138,8 +138,3 @@ if __name__ == "__main__":
         server_port=7860,
         share=False
     )
-```
-
-**3. Make sure `.python-version` contains:**
-```
-3.11.9
