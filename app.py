@@ -2,16 +2,15 @@ import streamlit as st
 import pickle
 import re
 import numpy as np
+import math
 
 st.set_page_config(page_title="Fake News Detector", page_icon="🔍", layout="wide")
 
-# ── session state ──────────────────────────────────────────────
 if "input_text" not in st.session_state:
     st.session_state.input_text = ""
 if "result" not in st.session_state:
     st.session_state.result = None
 
-# ── load models ────────────────────────────────────────────────
 @st.cache_resource
 def load_models():
     with open("model.pkl", "rb") as f:
@@ -22,7 +21,6 @@ def load_models():
 
 model, tfidf = load_models()
 
-# ── helpers ────────────────────────────────────────────────────
 def clean_text(text):
     text = text.lower()
     text = re.sub(r"\[.*?\]", "", text)
@@ -37,16 +35,13 @@ def predict_news(news_text):
     cleaned = clean_text(news_text)
     vec = tfidf.transform([cleaned])
     pred = model.predict(vec)[0]
-    # Safe confidence — handles any sklearn version
     try:
         scores = model.decision_function(vec)[0]
-        import math
         conf = round(100 / (1 + math.exp(-abs(float(scores)))), 1)
     except Exception:
         conf = 97.0
     return {"label": int(pred), "confidence": conf}
 
-# ── CSS ────────────────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -58,8 +53,6 @@ html, body, [class*="css"], .stApp {
 }
 #MainMenu, footer, header { visibility: hidden; }
 .block-container { padding: 1.5rem 4rem !important; max-width: 1300px !important; }
-
-/* HERO */
 .hero { text-align: center; padding: 2.5rem 1rem 1.5rem; }
 .hero-title {
     font-size: 3.2rem; font-weight: 800; letter-spacing: -1.5px; line-height: 1.1;
@@ -68,133 +61,56 @@ html, body, [class*="css"], .stApp {
     margin-bottom: 0.75rem;
 }
 .hero-sub { color: #475569; font-size: 1.05rem; margin-bottom: 1.5rem; }
-.badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 0; }
+.badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .badge {
     background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3);
     border-radius: 999px; padding: 5px 14px; font-size: 12.5px; font-weight: 500; color: #a5b4fc;
 }
-
-/* DIVIDER */
 .divider { border: none; border-top: 1px solid #0f172a; margin: 1.5rem 0; }
-
-/* INPUT CARD */
-.input-card {
-    background: #0a1628;
-    border: 1px solid #1e2d45;
-    border-radius: 20px;
-    padding: 24px 24px 20px;
-}
-
-/* TEXTAREA */
+.input-card { background: #0a1628; border: 1px solid #1e2d45; border-radius: 20px; padding: 24px 24px 20px; }
 .stTextArea > label { display: none !important; }
 .stTextArea textarea {
-    background: #020817 !important;
-    border: 1.5px solid #1e2d45 !important;
-    border-radius: 14px !important;
-    color: #e2e8f0 !important;
-    font-family: 'Inter', sans-serif !important;
-    font-size: 15px !important;
-    line-height: 1.75 !important;
-    padding: 16px !important;
-    resize: none !important;
-    transition: border-color 0.2s ease !important;
+    background: #020817 !important; border: 1.5px solid #1e2d45 !important;
+    border-radius: 14px !important; color: #e2e8f0 !important;
+    font-family: 'Inter', sans-serif !important; font-size: 15px !important;
+    line-height: 1.75 !important; padding: 16px !important; resize: none !important;
 }
-.stTextArea textarea:focus {
-    border-color: #6366f1 !important;
-    box-shadow: 0 0 0 3px rgba(99,102,241,0.12) !important;
-    outline: none !important;
-}
+.stTextArea textarea:focus { border-color: #6366f1 !important; box-shadow: 0 0 0 3px rgba(99,102,241,0.12) !important; }
 .stTextArea textarea::placeholder { color: #1e3a5f !important; }
-
-/* BUTTONS - global reset first */
 .stButton > button {
-    font-family: 'Inter', sans-serif !important;
-    font-weight: 500 !important;
-    border-radius: 12px !important;
-    transition: all 0.2s ease !important;
-    cursor: pointer !important;
+    font-family: 'Inter', sans-serif !important; font-weight: 500 !important;
+    border-radius: 12px !important; transition: all 0.2s ease !important; cursor: pointer !important;
 }
-
-/* PRIMARY - Analyze */
 .stButton > button[kind="primary"] {
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
-    border: none !important;
-    color: #ffffff !important;
-    font-weight: 700 !important;
-    font-size: 15px !important;
-    padding: 13px 20px !important;
-    width: 100% !important;
+    border: none !important; color: #ffffff !important; font-weight: 700 !important;
+    font-size: 15px !important; padding: 13px 20px !important; width: 100% !important;
     box-shadow: 0 4px 24px rgba(99,102,241,0.4) !important;
-    letter-spacing: 0.3px !important;
 }
-.stButton > button[kind="primary"]:hover {
-    box-shadow: 0 6px 30px rgba(99,102,241,0.55) !important;
-    transform: translateY(-1px) !important;
-}
-
-/* SECONDARY - Clear */
 .stButton > button[kind="secondary"] {
-    background: transparent !important;
-    border: 1.5px solid #1e2d45 !important;
-    color: #475569 !important;
-    font-size: 14px !important;
-    padding: 13px 20px !important;
-    width: 100% !important;
+    background: transparent !important; border: 1.5px solid #1e2d45 !important;
+    color: #475569 !important; font-size: 14px !important;
+    padding: 13px 20px !important; width: 100% !important;
 }
-.stButton > button[kind="secondary"]:hover {
-    border-color: #334155 !important;
-    color: #94a3b8 !important;
-}
-
-/* RESULT CARDS */
 .result-empty {
-    background: #0a1628; border: 1.5px dashed #1e2d45;
-    border-radius: 20px; padding: 60px 28px; text-align: center; height: 100%;
-    min-height: 280px; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
+    background: #0a1628; border: 1.5px dashed #1e2d45; border-radius: 20px;
+    padding: 60px 28px; text-align: center; min-height: 280px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
 .result-fake {
     background: linear-gradient(135deg, rgba(239,68,68,0.07) 0%, rgba(220,38,38,0.03) 100%);
-    border: 1.5px solid rgba(239,68,68,0.35);
-    border-radius: 20px; padding: 32px;
+    border: 1.5px solid rgba(239,68,68,0.35); border-radius: 20px; padding: 32px;
 }
 .result-real {
     background: linear-gradient(135deg, rgba(34,197,94,0.07) 0%, rgba(16,185,129,0.03) 100%);
-    border: 1.5px solid rgba(34,197,94,0.35);
-    border-radius: 20px; padding: 32px;
+    border: 1.5px solid rgba(34,197,94,0.35); border-radius: 20px; padding: 32px;
 }
 .conf-bar-wrap { background: #0f172a; border-radius: 999px; height: 6px; margin: 10px 0 18px; overflow: hidden; }
 .conf-bar-fill { height: 6px; border-radius: 999px; }
-
-/* EXAMPLE SECTION */
-.section-label {
-    color: #334155; font-size: 11px; font-weight: 700;
-    letter-spacing: 2.5px; text-transform: uppercase; margin: 0 0 12px;
-}
-/* Example buttons */
-div[data-testid="stHorizontalBlock"] .stButton > button {
-    background: #0a1628 !important;
-    border: 1px solid #1e2d45 !important;
-    color: #64748b !important;
-    font-size: 13px !important;
-    font-weight: 400 !important;
-    text-align: left !important;
-    padding: 12px 16px !important;
-    height: auto !important;
-    white-space: normal !important;
-    line-height: 1.5 !important;
-    width: 100% !important;
-    border-radius: 12px !important;
-}
-div[data-testid="stHorizontalBlock"] .stButton > button:hover {
-    background: #0f1f35 !important;
-    border-color: #6366f1 !important;
-    color: #c7d2fe !important;
-}
+.section-label { color: #334155; font-size: 11px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; margin: 0 0 12px; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── HERO ───────────────────────────────────────────────────────
 st.markdown("""
 <div class="hero">
     <div class="hero-title">🔍 Fake News Detector</div>
@@ -210,7 +126,6 @@ st.markdown("""
 <hr class="divider">
 """, unsafe_allow_html=True)
 
-# ── MAIN LAYOUT ────────────────────────────────────────────────
 left, right = st.columns([1, 1], gap="large")
 
 with left:
@@ -240,17 +155,15 @@ with left:
 
 with right:
     res = st.session_state.result
-
     if res is None:
         st.markdown("""
         <div class="result-empty">
-            <div style="font-size:3rem;margin-bottom:16px;filter:grayscale(0.3);">🧠</div>
+            <div style="font-size:3rem;margin-bottom:16px;">🧠</div>
             <p style="font-size:15px;color:#1e3a5f;font-weight:600;margin:0 0 8px;">Awaiting Analysis</p>
             <p style="font-size:13px;color:#0f2240;margin:0;line-height:1.6;">
                 Paste a news article on the left<br>and click <strong style="color:#1e3a5f;">Analyze News</strong>
             </p>
         </div>""", unsafe_allow_html=True)
-
     elif res["label"] == 0:
         conf = res["confidence"]
         st.markdown(f"""
@@ -258,7 +171,7 @@ with right:
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
                 <div style="background:rgba(239,68,68,0.15);border-radius:14px;padding:14px;font-size:1.8rem;line-height:1;">🔴</div>
                 <div>
-                    <p style="color:#ef4444;font-size:1.5rem;font-weight:800;margin:0;letter-spacing:-0.5px;">FAKE NEWS</p>
+                    <p style="color:#ef4444;font-size:1.5rem;font-weight:800;margin:0;">FAKE NEWS</p>
                     <p style="color:#7f1d1d;font-size:13px;margin:0;font-weight:500;">Likely Misinformation Detected</p>
                 </div>
             </div>
@@ -269,15 +182,13 @@ with right:
             <div class="conf-bar-wrap">
                 <div class="conf-bar-fill" style="width:{conf}%;background:linear-gradient(90deg,#ef4444,#f97316);"></div>
             </div>
-            <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:10px;padding:14px;margin-top:4px;">
+            <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:10px;padding:14px;">
                 <p style="color:#7f1d1d;font-size:13px;margin:0;line-height:1.6;">
-                    ⚠️ This article shows strong signs of being <strong style="color:#ef4444;">fake or misleading</strong>.
-                    Always verify with trusted sources like <strong style="color:#94a3b8;">Reuters</strong>,
-                    <strong style="color:#94a3b8;">BBC</strong>, or <strong style="color:#94a3b8;">AP News</strong>.
+                    ⚠️ Strong signs of <strong style="color:#ef4444;">fake or misleading</strong> content.
+                    Verify with <strong style="color:#94a3b8;">Reuters</strong>, <strong style="color:#94a3b8;">BBC</strong>, or <strong style="color:#94a3b8;">AP News</strong>.
                 </p>
             </div>
         </div>""", unsafe_allow_html=True)
-
     else:
         conf = res["confidence"]
         st.markdown(f"""
@@ -285,7 +196,7 @@ with right:
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
                 <div style="background:rgba(34,197,94,0.12);border-radius:14px;padding:14px;font-size:1.8rem;line-height:1;">🟢</div>
                 <div>
-                    <p style="color:#22c55e;font-size:1.5rem;font-weight:800;margin:0;letter-spacing:-0.5px;">REAL NEWS</p>
+                    <p style="color:#22c55e;font-size:1.5rem;font-weight:800;margin:0;">REAL NEWS</p>
                     <p style="color:#14532d;font-size:13px;margin:0;font-weight:500;">Verified Legitimate Journalism</p>
                 </div>
             </div>
@@ -296,10 +207,10 @@ with right:
             <div class="conf-bar-wrap">
                 <div class="conf-bar-fill" style="width:{conf}%;background:linear-gradient(90deg,#22c55e,#10b981);"></div>
             </div>
-            <div style="background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.15);border-radius:10px;padding:14px;margin-top:4px;">
+            <div style="background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.15);border-radius:10px;padding:14px;">
                 <p style="color:#14532d;font-size:13px;margin:0;line-height:1.6;">
-                    ✅ This content aligns with patterns of <strong style="color:#22c55e;">legitimate journalism</strong>.
-                    Language and structure match verified news reporting standards.
+                    ✅ Aligns with <strong style="color:#22c55e;">legitimate journalism</strong> patterns.
+                    Language matches verified news reporting standards.
                 </p>
             </div>
         </div>""", unsafe_allow_html=True)
@@ -309,12 +220,12 @@ st.markdown('<hr class="divider">', unsafe_allow_html=True)
 st.markdown('<p class="section-label">📋 Quick Test Examples</p>', unsafe_allow_html=True)
 
 examples = [
-    ("BREAKING: You won't believe what Obama just did! WATCH NOW before deleted"),
-    ("Republican senator says he will vote for new healthcare bill"),
-    ("Hillary Clinton SECRET video EXPOSED — Share before it gets removed!"),
-    ("Trump signs executive order on immigration at the White House"),
-    ("VIDEO: Watch what happens when reporter confronts Obama on live TV"),
-    ("US military to accept transgender recruits after federal court ruling"),
+    ("🔴", "BREAKING: You won't believe what Obama just did! WATCH NOW before deleted"),
+    ("🟢", "Republican senator says he will vote for new healthcare bill"),
+    ("🔴", "Hillary Clinton SECRET video EXPOSED — Share before it gets removed!"),
+    ("🟢", "Trump signs executive order on immigration at the White House"),
+    ("🔴", "VIDEO: Watch what happens when reporter confronts Obama on live TV"),
+    ("🟢", "US military to accept transgender recruits after federal court ruling"),
 ]
 
 cols = st.columns(3)
@@ -328,29 +239,25 @@ for i, (dot, text) in enumerate(examples):
 # ── FOOTER ─────────────────────────────────────────────────────
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 st.markdown("""
-<div style="text-align:center; padding: 1.5rem 0 2rem;">
-    <p style="color:#1e3a5f; font-size:13px; margin:0 0 12px; font-weight:500;">
-        Built with ❤️ using Python · Scikit-learn · Streamlit
-    </p>
-    <div style="display:flex; justify-content:center; align-items:center; gap:16px; flex-wrap:wrap;">
-        <div style="background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); border-radius:12px; padding:10px 20px; display:flex; align-items:center; gap:10px;">
-            <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6); border-radius:8px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:14px;">👨‍💻</div>
+<div style="text-align:center;padding:1.5rem 0 2rem;">
+    <p style="color:#1e3a5f;font-size:13px;margin:0 0 14px;font-weight:500;">Built with ❤️ using Python · Scikit-learn · Streamlit</p>
+    <div style="display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:10px 20px;display:flex;align-items:center;gap:10px;">
+            <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;">👨‍💻</div>
             <div style="text-align:left;">
-                <p style="color:#a5b4fc; font-size:13px; font-weight:700; margin:0;">Akshit Agrawal</p>
-                <p style="color:#334155; font-size:11px; margin:0;">AI &amp; Backend Developer</p>
+                <p style="color:#a5b4fc;font-size:13px;font-weight:700;margin:0;">Akshit Agrawal</p>
+                <p style="color:#334155;font-size:11px;margin:0;">AI &amp; Backend Developer</p>
             </div>
         </div>
-        <div style="color:#334155; font-size:20px;">×</div>
-        <div style="background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); border-radius:12px; padding:10px 20px; display:flex; align-items:center; gap:10px;">
-            <div style="background:linear-gradient(135deg,#ec4899,#8b5cf6); border-radius:8px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:14px;">👩‍💻</div>
+        <div style="color:#334155;font-size:20px;">×</div>
+        <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:10px 20px;display:flex;align-items:center;gap:10px;">
+            <div style="background:linear-gradient(135deg,#ec4899,#8b5cf6);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;">👩‍💻</div>
             <div style="text-align:left;">
-                <p style="color:#a5b4fc; font-size:13px; font-weight:700; margin:0;">Ishita</p>
-                <p style="color:#334155; font-size:11px; margin:0;">Frontend Developer</p>
+                <p style="color:#a5b4fc;font-size:13px;font-weight:700;margin:0;">Ishita</p>
+                <p style="color:#334155;font-size:11px;margin:0;">Frontend Developer</p>
             </div>
         </div>
     </div>
-    <p style="color:#0f2240; font-size:11px; margin:16px 0 0; letter-spacing:1.5px; text-transform:uppercase;">
-        Fundamentals of Data Science · 2026
-    </p>
+    <p style="color:#0f2240;font-size:11px;margin:16px 0 0;letter-spacing:1.5px;text-transform:uppercase;">Fundamentals of Data Science · 2026</p>
 </div>
 """, unsafe_allow_html=True)
