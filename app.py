@@ -133,4 +133,13 @@ with gr.Blocks(title="Fake News Detector") as app:
     clear_btn.click(fn=lambda: ("", ""), outputs=[input_box, output_box])
 
 if __name__ == "__main__":
-    app.launch(server_name="0.0.0.0", server_port=7860)
+    app.launch(
+        server_name="0.0.0.0",
+        server_port=7860,
+        share=False
+    )
+```
+
+**3. Make sure `.python-version` contains:**
+```
+3.11.9
