@@ -220,12 +220,12 @@ st.markdown('<hr class="divider">', unsafe_allow_html=True)
 st.markdown('<p class="section-label">📋 Quick Test Examples</p>', unsafe_allow_html=True)
 
 examples = [
-    ("🔴", "BREAKING: You won't believe what Obama just did! WATCH NOW before deleted"),
-    ("🟢", "Republican senator says he will vote for new healthcare bill"),
-    ("🔴", "Hillary Clinton SECRET video EXPOSED — Share before it gets removed!"),
-    ("🟢", "Trump signs executive order on immigration at the White House"),
-    ("🔴", "VIDEO: Watch what happens when reporter confronts Obama on live TV"),
-    ("🟢", "US military to accept transgender recruits after federal court ruling"),
+    ("BREAKING: You won't believe what Obama just did! WATCH NOW before deleted"),
+    ("Republican senator says he will vote for new healthcare bill"),
+    ("Hillary Clinton SECRET video EXPOSED — Share before it gets removed!"),
+    ("Trump signs executive order on immigration at the White House"),
+    ("VIDEO: Watch what happens when reporter confronts Obama on live TV"),
+    ("US military to accept transgender recruits after federal court ruling"),
 ]
 
 cols = st.columns(3)
