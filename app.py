@@ -309,12 +309,12 @@ st.markdown('<hr class="divider">', unsafe_allow_html=True)
 st.markdown('<p class="section-label">📋 Quick Test Examples</p>', unsafe_allow_html=True)
 
 examples = [
-    ("🔴", "BREAKING: You won't believe what Obama just did! WATCH NOW before deleted"),
-    ("🟢", "Republican senator says he will vote for new healthcare bill"),
-    ("🔴", "Hillary Clinton SECRET video EXPOSED — Share before it gets removed!"),
-    ("🟢", "Trump signs executive order on immigration at the White House"),
-    ("🔴", "VIDEO: Watch what happens when reporter confronts Obama on live TV"),
-    ("🟢", "US military to accept transgender recruits after federal court ruling"),
+    ("BREAKING: You won't believe what Obama just did! WATCH NOW before deleted"),
+    ("Republican senator says he will vote for new healthcare bill"),
+    ("Hillary Clinton SECRET video EXPOSED — Share before it gets removed!"),
+    ("Trump signs executive order on immigration at the White House"),
+    ("VIDEO: Watch what happens when reporter confronts Obama on live TV"),
+    ("US military to accept transgender recruits after federal court ruling"),
 ]
 
 cols = st.columns(3)
@@ -324,3 +324,33 @@ for i, (dot, text) in enumerate(examples):
             st.session_state.input_text = text
             st.session_state.result = None
             st.rerun()
+
+# ── FOOTER ─────────────────────────────────────────────────────
+st.markdown('<hr class="divider">', unsafe_allow_html=True)
+st.markdown("""
+<div style="text-align:center; padding: 1.5rem 0 2rem;">
+    <p style="color:#1e3a5f; font-size:13px; margin:0 0 12px; font-weight:500;">
+        Built with ❤️ using Python · Scikit-learn · Streamlit
+    </p>
+    <div style="display:flex; justify-content:center; align-items:center; gap:16px; flex-wrap:wrap;">
+        <div style="background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); border-radius:12px; padding:10px 20px; display:flex; align-items:center; gap:10px;">
+            <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6); border-radius:8px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:14px;">👨‍💻</div>
+            <div style="text-align:left;">
+                <p style="color:#a5b4fc; font-size:13px; font-weight:700; margin:0;">Akshit Agrawal</p>
+                <p style="color:#334155; font-size:11px; margin:0;">AI &amp; Backend Developer</p>
+            </div>
+        </div>
+        <div style="color:#334155; font-size:20px;">×</div>
+        <div style="background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); border-radius:12px; padding:10px 20px; display:flex; align-items:center; gap:10px;">
+            <div style="background:linear-gradient(135deg,#ec4899,#8b5cf6); border-radius:8px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:14px;">👩‍💻</div>
+            <div style="text-align:left;">
+                <p style="color:#a5b4fc; font-size:13px; font-weight:700; margin:0;">Ishita</p>
+                <p style="color:#334155; font-size:11px; margin:0;">Frontend Developer</p>
+            </div>
+        </div>
+    </div>
+    <p style="color:#0f2240; font-size:11px; margin:16px 0 0; letter-spacing:1.5px; text-transform:uppercase;">
+        Fundamentals of Data Science · 2026
+    </p>
+</div>
+""", unsafe_allow_html=True)
