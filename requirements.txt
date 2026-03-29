@@ -1,6 +1,4 @@
-gradio==3.41.2
-huggingface_hub==0.17.3
+streamlit
 scikit-learn
 pandas
 numpy
-jinja2==3.0.3
