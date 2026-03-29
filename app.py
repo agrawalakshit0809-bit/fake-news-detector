@@ -2,16 +2,16 @@ import streamlit as st
 import pickle
 import re
 
-# Page Configuration
 st.set_page_config(page_title="Fake News Detector", page_icon="🔍", layout="centered")
 
-# Load Models
+if "input_text" not in st.session_state:
+    st.session_state.input_text = ""
+
 with open('model.pkl', 'rb') as f:
     model = pickle.load(f)
 with open('tfidf.pkl', 'rb') as f:
     tfidf = pickle.load(f)
 
-# Text Cleaning Function
 def clean_text(text):
     text = text.lower()
     text = re.sub(r'\[.*?\]', '', text)
@@ -20,7 +20,6 @@ def clean_text(text):
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
-# Prediction Function
 def predict_news(news_text):
     if not news_text.strip():
         return None, None, None
@@ -35,7 +34,6 @@ def predict_news(news_text):
         confidence = round(probability[1] * 100, 2)
         return "REAL", confidence, "🟢"
 
-# Custom CSS for UI
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -49,11 +47,11 @@ p { color: #94a3b8; }
 .result-box { background: #1e293b; border: 1px solid #2d3f55; border-radius: 14px; padding: 24px; margin-top: 16px; }
 .stTextArea textarea { background-color: #1e293b !important; color: #f1f5f9 !important; border: 1.5px solid #2d3f55 !important; border-radius: 10px !important; }
 .stButton > button { background-color: #6366f1 !important; color: white !important; border: none !important; border-radius: 10px !important; font-weight: 600 !important; width: 100% !important; padding: 12px !important; }
+.example-btn > button { background-color: #1e293b !important; color: #f1f5f9 !important; border: 1.5px solid #334155 !important; border-radius: 12px !important; text-align: left !important; }
 footer { visibility: hidden; }
 </style>
 """, unsafe_allow_html=True)
 
-# Header Section
 st.markdown("""
 <div style="text-align:center; padding: 20px 0 10px;">
     <h1 style="font-size:2.4em; font-weight:700; margin-bottom:8px;">🔍 Fake News Detector</h1>
@@ -67,15 +65,14 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Layout: Input and Analysis
 col1, col2 = st.columns(2)
 
 with col1:
     news_input = st.text_area(
         "Paste News Here",
+        value=st.session_state.input_text,
         placeholder="Type or paste any news headline or article...",
-        height=200,
-        key="news_input"
+        height=200
     )
     bcol1, bcol2 = st.columns(2)
     with bcol1:
@@ -117,7 +114,6 @@ with col2:
         </div>
         """, unsafe_allow_html=True)
 
-# Example Section
 st.markdown("""
 <p style="color:#94a3b8; font-size:0.78em; font-weight:600; letter-spacing:2px; text-transform:uppercase; margin:20px 0 12px;">
     📋 Click Any Example to Test
